@@ -411,6 +411,7 @@ private:
     DECLARE_PARAMETER(vrouter_max_workers);
     DECLARE_PARAMETER(vrouter_registry_cache_capacity);
     DECLARE_PARAMETER(vrouter_xmlrpc_client_timeout_ms);
+    DECLARE_PARAMETER(vrouter_use_fencing);
 
     std::shared_ptr<youtils::LockedArakoon> larakoon_;
     std::shared_ptr<CachedObjectRegistry> object_registry_;
@@ -594,6 +595,9 @@ private:
                  FastPathCookie (LocalNode::*fast_fun)(const FastPathCookie&,
                                                        Args...),
                  Args...);
+
+    bool
+    fencing_support_() const;
 };
 
 }
