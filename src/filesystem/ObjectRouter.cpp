@@ -129,6 +129,13 @@ ObjectRouter::ObjectRouter(const bpt::ptree& pt,
 
 ObjectRouter::~ObjectRouter()
 {
+    shutdown_();
+    LOG_INFO("Bye");
+}
+
+void
+ObjectRouter::shutdown_()
+{
     // ZMQ teardown
     // (1) destruct (close) all req sockets and all shared_ptrs to the ztx_
     node_map_.clear();
@@ -136,8 +143,6 @@ ObjectRouter::~ObjectRouter()
     // (2) this will close the ZMQ context and lead to ZWorkerPool shutting down
     //     synchronously.
     ztx_ = nullptr;
-
-    LOG_INFO("Bye");
 }
 
 ObjectRouter::NodeMap

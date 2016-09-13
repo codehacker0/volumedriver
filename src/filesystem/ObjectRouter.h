@@ -138,6 +138,7 @@ class ObjectRouter
 {
     friend class volumedriverfstest::FileSystemTestBase;
     friend class volumedriverfstest::ObjectRouterTest;
+    friend class volumedriverfstest::RemoteTest;
 
 public:
     ObjectRouter(const boost::property_tree::ptree& pt,
@@ -599,6 +600,9 @@ private:
 
     bool
     fencing_support_() const;
+
+    void
+    shutdown_();
 };
 
 }
