@@ -45,9 +45,10 @@ public:
     MAKE_EXCEPTION(DeadAndGoneException,
                    MetaDataStoreException);
 
-    MDSMetaDataStore(const MDSMetaDataBackendConfig& cfg,
-                     backend::BackendInterfacePtr bi,
+    MDSMetaDataStore(const MDSMetaDataBackendConfig&,
+                     backend::BackendInterfacePtr,
                      const boost::filesystem::path& home,
+                     const OwnerTag,
                      uint64_t num_pages_cached);
 
     ~MDSMetaDataStore() = default;
@@ -154,6 +155,7 @@ private:
 
     const uint64_t num_pages_cached_;
     const boost::filesystem::path home_;
+    const OwnerTag owner_tag_;
 
     using MetaDataStorePtr = std::shared_ptr<CachedMetaDataStore>;
 

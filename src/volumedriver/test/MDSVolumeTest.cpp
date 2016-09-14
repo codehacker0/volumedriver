@@ -334,6 +334,7 @@ protected:
     {
         MetaDataBackendInterfacePtr mdb(std::make_shared<MDSMetaDataBackend>(cfg,
                                                                              wrns.ns(),
+                                                                             boost::none,
                                                                              boost::none));
 
         const uint32_t secs = mds_manager_->poll_interval().count();
@@ -745,6 +746,7 @@ TEST_P(MDSVolumeTest, slave_catchup)
     const MDSNodeConfigs ncfgs(node_configs());
     MDSMetaDataBackend mdb(ncfgs[1],
                            wrns->ns(),
+                           boost::none,
                            boost::none);
 
     EXPECT_EQ(boost::none,
@@ -1052,6 +1054,7 @@ TEST_P(MDSVolumeTest, futile_scrub)
     const MDSNodeConfigs ncfgs(node_configs());
     MDSMetaDataBackend mdb(ncfgs[1],
                            wrns->ns(),
+                           boost::none,
                            boost::none);
 
     const auto old_scrub_id(v->getMetaDataStore()->scrub_id());
@@ -1125,6 +1128,7 @@ TEST_P(MDSVolumeTest, happy_scrub)
     const MDSNodeConfigs ncfgs(node_configs());
     MDSMetaDataBackend mdb(ncfgs[1],
                            wrns->ns(),
+                           boost::none,
                            boost::none);
 
     const scrubbing::ScrubReply scrub_reply(prepare_scrub_test(*v));
@@ -1333,6 +1337,7 @@ TEST_P(MDSVolumeTest, no_relocations_on_slaves)
         MetaDataBackendInterfacePtr
             mdb(std::make_shared<MDSMetaDataBackend>(node_configs(*mgr)[1],
                                                      wrns->ns(),
+                                                     boost::none,
                                                      boost::none));
         const MaybeScrubId maybe_scrub_id(mdb->scrub_id());
 
@@ -1394,6 +1399,8 @@ TEST_P(MDSVolumeTest, local_restart_of_pristine_clone_with_empty_mds)
                                            CreateNamespace::F);
     }
 
+    const OwnerTag owner_tag(c->getOwnerTag());
+
     c->scheduleBackendSync();
     waitForThisBackendWrite(*c);
 
@@ -1405,8 +1412,9 @@ TEST_P(MDSVolumeTest, local_restart_of_pristine_clone_with_empty_mds)
     // RocksDB's WAL is disabled.
     mds::ClientNG::Ptr client(mds::ClientNG::create(node_configs()[0]));
     mds::TableInterfacePtr table(client->open(cns->ns().str()));
-    table->clear();
-    table->set_role(mds::Role::Slave);
+    table->clear(owner_tag);
+    table->set_role(mds::Role::Slave,
+                    owner_tag);
 
     localRestart(cns->ns());
 
